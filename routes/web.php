@@ -1,18 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+use App\Http\Controllers\NoteController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('custom-welcome');
 });
+
+// Страница для создания заметки (POST-запрос)
+Route::get('/create-note', [NoteController::class, 'showCreateForm']);
+Route::post('/create-note', [NoteController::class, 'storeNote']);
+
+// Страница для получения всех заметок (GET-запрос)
+Route::get('/all-notes', [NoteController::class, 'showAllNotes']);
