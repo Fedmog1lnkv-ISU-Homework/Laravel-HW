@@ -3,54 +3,69 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Note;
 
 class NoteController extends Controller
 {
-    public function showCreateForm()
-    {
-        return view('create-note');
+    public function add_note_page() {
+		return view('note.create-note');
+	}
+
+	public function update_note_page($id) {
+		$user_id = Auth::id();
+		$note = Note::get_note_to_action($user_id, $id);
+		if ($note != null) {
+			return view('note.update-note', compact('note'));
+		} else {
+			return back();
+		}
+	}
+
+	public function all_notes() {
+		$data = Note::get_all_notes();
+		return view('note.all-notes', ['notes' => $data]);
+	}
+
+	public function note_by_id($id) {
+        $note = Note::get_note($id);
+		return view('note.note', compact('note'));
+	}
+
+	public function add_note(Request $request) {
+		$data  = $request->validate([
+			'title' => ['required', 'string'],
+			'content' => ['required', 'string'],
+		]);
+		
+		$data['user_id'] = Auth::id();
+        
+		$note = Note::create($data);
+		return redirect('/note/' . $note->id);
     }
 
-    public function storeNote(Request $request)
-    {
-        // Валидация формы
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
+	public function delete(Request $request) {
+		$data  = $request->validate([
+			'id' => ['required', 'numeric'],
+		]);
+		Note::destroy($data['id']);
+		return back();
+	}
+
+	public function update_note(Request $request) {
+		$data  = $request->validate([
+			'id' => ['required', 'numeric'],
+			'title' => ['required', 'string'],
+			'content' => ['required', 'string'],
+		]);
+		$user_id = Auth::id();
+		if (Note::is_user_can_eddit_note($user_id, $data['id'])) {
+			$note = Note::find($data['id']);
+			$note->update($data);
+			return redirect('/note/' . $note->id);
+		}
+		return back()->withErrors([
+            'error' => 'You can not eddit this note',
         ]);
-
-        if ($validator->fails()) {
-            return redirect('/create-note')
-                        ->withErrors($validator)
-                        ->withInput();
-        }
-
-        // Создание заметки
-        $note = [
-            'title' => $request->input('title'),
-            'content' => $request->input('content'),
-        ];
-
-        // Сохранение заметки в файл в формате JSON
-        $filename = 'note_' . uniqid() . '.json';
-        File::put(storage_path('notes/' . $filename), json_encode($note));
-
-        return redirect('/create-note')->with('success', 'Заметка успешно создана!');
-    }
-
-    public function showAllNotes()
-    {
-        // Получение всех заметок из директории storage/notes
-        $notes = [];
-        $files = File::files(storage_path('notes'));
-
-        foreach ($files as $file) {
-            $content = File::get($file);
-            $notes[] = json_decode($content, true);
-        }
-
-        return view('all-notes', ['notes' => $notes]);
-    }
+	}
 }

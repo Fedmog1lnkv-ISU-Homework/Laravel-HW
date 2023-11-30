@@ -2,44 +2,42 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
 
-class User extends Authenticatable
+use Illuminate\Support\Facades\Hash;
+
+
+class User extends Model implements Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+	use AuthenticatableTrait;
+    use HasFactory;
+	use SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
+	protected $table = 'users';
+	protected $fillable = [
+        'username', 'password'
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+	static public function register_user($user_data) {
+		$is_registered = User::where('username', $user_data['username'])->exists();
+		if ($is_registered) {
+			return null;
+		}
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+		return User::create($user_data);
+	}
+
+	static public function login($user_data) {
+		$user = User::where('username', $user_data['username'])->first();
+		if ($user) {
+			if (Hash::check($user_data['password'], $user->password)) {
+				return $user;
+			}
+		}
+		return null;
+	}
 }

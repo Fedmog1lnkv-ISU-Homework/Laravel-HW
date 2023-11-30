@@ -1,4 +1,4 @@
-@extends('layouts.app', ['pageTitle' => 'Welcome Page'])
+@extends('layouts.main', ['pageTitle' => 'Welcome Page'])
 
 @section('content')
     <div class="content" style="text-align: center; margin-top: 50px;">

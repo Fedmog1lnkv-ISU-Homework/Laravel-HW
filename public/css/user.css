@@ -1,0 +1,29 @@
+.user {
+	min-width: 320px;
+	width: 640px;
+	max-width: 640px;
+
+	margin: 0 0 20px 0;
+
+	background-color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.user a {
+	text-decoration: none;
+}
+
+.username {
+	color: #245125;
+	font-size: 24px;
+	margin: 10px 0;
+	font-weight: 600;
+}
+
+.user .logout {
+	background-color: #901515;
+	color: white;
+}
+
