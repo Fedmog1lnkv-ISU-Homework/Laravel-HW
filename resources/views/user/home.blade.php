@@ -6,9 +6,6 @@
 		<div class="registered_date">{{ $user['created_at'] }}</div>
 
 		<div class="options">
-			<a href="">
-				<button type="button" class="update">Редактировать</button>
-			</a>
 	
 			<a href="{{ route('auth.logout') }}">
 				<button type="button" class="logout">Выйти</button>
@@ -16,5 +13,9 @@
 		</div>
     </div>
 
-	@include('note.notes-block', ['notes' => $notes, 'updatable' => true])
+	@include('note.notes-block', ['notes' => $notes, 'comments' => $comments, 'updatable' => true, 'comment_moderable' => true])
+@endsection
+
+@section('js')
+	<script src="{{ asset('js/comments.js') }}"></script>
 @endsection

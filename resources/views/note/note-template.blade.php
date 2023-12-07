@@ -11,9 +11,9 @@
         {{ $note['content'] }}
     </div>
 
-    @isset($note['created_at'])
+    @isset($note['publisher_time'])
         <div class="created_at">
-            {{ $note['created_at'] }}
+            {{ $note['publisher_time'] }}
         </div>
     @endisset
 
@@ -30,8 +30,44 @@
 					<input type="hidden" name="id" value="{{ $note['id'] }}" />
 					<button type="submit" class="delete">Удалить</button>
 				</form>
+
+				@if ($note['is_removed_from_publication'])
+					<form action="{{ route('note.return') }}" method="POST">
+						@csrf
+						@method('PUT')
+						<input type="hidden" name="id" value="{{ $note['id'] }}" />
+						<button type="submit" class="return">Вернуть публикацию</button>
+					</form>
+				@else
+					<form action="{{ route('note.remove') }}" method="POST">
+						@csrf
+						@method('PUT')
+						<input type="hidden" name="id" value="{{ $note['id'] }}" />
+						<button type="submit" class="remove">Снять с публикации</button>
+					</form>
+				@endif
+				
 			</div>
 		@endif
+	@endisset
+
+	@isset($comment_moderable)
+	<div class="comment-container", id="comments-{{ $note['id'] }}">
+		<div class="count-line">
+			<span class="icon">
+				комментарии
+			</span>
+			<span class="count">
+			</span>
+		</div>
+
+		<button class="show-comments", onclick="make_comments_visibale(event, {{ $note['id'] }})">показать комментарии</button>
+		<div class="comments hidden">
+			@foreach ($comments[$note['id']] as $comment)
+				@include('comment.comment', ['deleteable' => true, 'comment' => $comment])
+			@endforeach
+		</div>
+	</div>
 	@endisset
 
 	@isset($commentable)

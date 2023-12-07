@@ -37,8 +37,12 @@ Route::middleware('auth')->group( function () {
 
 	Route::get('/update/note/{id}', [NoteController::class, 'update_note_page'])->name('note.update.page');
 	Route::put('/note', [NoteController::class, 'update_note'])->name('note.update.process');
+	Route::put('/note/remove', [NoteController::class, 'remove_note_from_publication'])->name('note.remove');
+	Route::put('/note/return', [NoteController::class, 'return_note_to_publication'])->name('note.return');
 	Route::delete('/note', [NoteController::class, 'note_by_id'])->name('note.delete');
+
 	Route::post('/comment', [CommentController::class, 'create_comment'])->name('comment.add');
+	Route::delete('/delete', [CommentController::class, 'delete'])->name('comment.delete');
 });
 
 

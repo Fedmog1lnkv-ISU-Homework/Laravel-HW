@@ -11,8 +11,26 @@ class Note extends Model
 	protected $table = 'notes';
 	protected $primaryKey = 'id';
 	protected $fillable = [
-        'user_id', 'title','content'
+        'user_id', 'title','content', 'is_published', 'publisher_time', 'is_publish_at_time', 'is_removed_from_publication'
     ];
+
+
+	static public function add_note($data) {
+		if (!isset($data['is_publish_at_time'])) {
+			$data['is_publish_at_time'] = false;
+		} else {
+			$data['is_publish_at_time'] = true;
+		}
+		if (!$data['is_publish_at_time']) {
+			$data['publisher_time'] = now();
+			$data['is_published'] = true;
+		} else {
+			$data['is_published'] = false;
+		}
+		// dd($data);
+
+		return Note::create($data);
+	}
 
 
 	static public function get_note($id) {
@@ -21,12 +39,18 @@ class Note extends Model
 	}
 
 	static public function get_all_notes() {
-		$query = Note::join('users', 'notes.user_id', '=', 'users.id')->select('notes.*', 'users.username');
+		$query = Note::join('users', 'notes.user_id', '=', 'users.id')
+		->select('notes.*', 'users.username')
+		->where('notes.is_published', true)
+		->where('notes.is_removed_from_publication', false)
+		->orderBy('notes.publisher_time', 'desc');
 		return $query->get();
 	}
 
 	static public function get_all_user_notes($user_id) {
-		$query = Note::join('users', 'notes.user_id', '=', 'users.id')->select('notes.*', 'users.username')->where("user_id", $user_id);
+		$query = Note::join('users', 'notes.user_id', '=', 'users.id')
+		->select('notes.*', 'users.username')
+		->where("user_id", $user_id);
 		return $query->get();
 	}
 
@@ -41,6 +65,18 @@ class Note extends Model
 			return true;
 		}
 		return false;
-	}	
+	}
+
+	static public function publish_unpublished_notes() {
+		$now = now();
+	
+		$affectedRows  = Note::where('is_publish_at_time', true)
+			->where('is_published', false)
+			->where('publisher_time', '<=', $now)
+			->where('is_removed_from_publication', false)
+			->update(['is_published' => true]);
+	
+		return $affectedRows ;
+	}
 
 }

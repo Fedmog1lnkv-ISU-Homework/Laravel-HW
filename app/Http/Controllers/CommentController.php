@@ -19,6 +19,14 @@ class CommentController extends Controller
 		return response()->json($comment);
 	}
 
+	public function delete(Request $request) {
+		$data  = $request->validate([
+			'id' => ['required', 'numeric'],
+		]);
+		Comment::destroy($data['id']);
+		return back();
+	}
+
 	public function get_comments_for_note($note_id) {
 		$data = Comment::get_comments_for_note($note_id);
 		return response()->json($data);

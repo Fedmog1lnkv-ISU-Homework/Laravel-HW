@@ -36,11 +36,12 @@ class NoteController extends Controller
 		$data  = $request->validate([
 			'title' => ['required', 'string'],
 			'content' => ['required', 'string'],
+			'is_publish_at_time' => ['nullable', 'boolean'],
+			'publisher_time' => ['nullable', 'date_format:Y-m-d\TH:i']
 		]);
-		
+
 		$data['user_id'] = Auth::id();
-        
-		$note = Note::create($data);
+		$note = Note::add_note($data);
 		return redirect('/note/' . $note->id);
     }
 
@@ -63,6 +64,38 @@ class NoteController extends Controller
 			$note = Note::find($data['id']);
 			$note->update($data);
 			return redirect('/note/' . $note->id);
+		}
+		return back()->withErrors([
+            'error' => 'You can not eddit this note',
+        ]);
+	}
+
+	public function remove_note_from_publication(Request $request) {
+		$data  = $request->validate([
+			'id' => ['required', 'numeric'],
+		]);
+		$user_id = Auth::id();
+		if (Note::is_user_can_eddit_note($user_id, $data['id'])) {
+			$note = Note::find($data['id']);
+			$note->update(['is_removed_from_publication' => true]);
+			// dd($note);
+			return back();
+		}
+		return back()->withErrors([
+            'error' => 'You can not eddit this note',
+        ]);
+	}
+
+	public function return_note_to_publication(Request $request) {
+		$data  = $request->validate([
+			'id' => ['required', 'numeric'],
+		]);
+		$user_id = Auth::id();
+		if (Note::is_user_can_eddit_note($user_id, $data['id'])) {
+			$note = Note::find($data['id']);
+			$note->update(['is_removed_from_publication' => false]);
+			// dd($note);
+			return back();
 		}
 		return back()->withErrors([
             'error' => 'You can not eddit this note',

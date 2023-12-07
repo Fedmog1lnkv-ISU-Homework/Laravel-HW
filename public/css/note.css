@@ -24,7 +24,7 @@
 	margin: 20px 0 20px 0;
 }
 
-.options button {
+.options button, .comment .delete {
 	padding: 10px;
 	border-radius: 8px;
 	border: none;
@@ -64,19 +64,53 @@
 	display: block;
 }
 
-.delete {
+.delete, .comment .delete {
 	background-color: #901515;
 	color: white;
 	transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.delete:hover {
+.delete:hover, .comment .delete {
     background-color: #901515;
     transform: scale(1.05);
     cursor: pointer;
 }
 
-.delete:active {
+.delete:active, .comment .delete {
+    transform: scale(0.95);
+}
+
+.remove {
+	margin-left: 10px;
+	background-color: #154690;
+	color: white;
+	transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.remove:hover {
+    background-color: #152c90;
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+.remove:active {
+    transform: scale(0.95);
+}
+
+.return {
+	margin-left: 10px;
+	background-color: #5f1590;
+	color: white;
+	transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.return:hover {
+    background-color: #430f67;
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+.return:active {
     transform: scale(0.95);
 }
 
@@ -96,6 +130,11 @@
 	padding: 10px;
 	border: 2px solid #4CAF50;
 	border-radius: 8px;
+}
+
+.comment .delete {
+	padding: 5px;
+	margin: 10px 0 0 0;
 }
 
 .comment span {
@@ -145,4 +184,20 @@
 
 .comments-add button:active, .show-comments:active {
     transform: scale(0.95);
+}
+
+.disabled {
+	display: none;
+}
+
+.line {
+	margin: 10px 0;
+}
+
+.line label {
+	display: inline;
+}
+
+.hidden {
+	display: none;
 }

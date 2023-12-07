@@ -54,11 +54,7 @@
 								comment_author.className = 'comment_author'
 								comment_date.className = 'comment_date'
 
-								comment.appendChild(comment_author)
-								comment.appendChild(comment_text)
-								comment.appendChild(comment_date)
-
-								container.appendChild(comment);
+								update_comments(note_id)
 							}
 						}
 						
